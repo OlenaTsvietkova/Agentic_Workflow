@@ -51,4 +51,35 @@ WORKFLOW:
 1. Always call web_search first
 2. Then call download_from_search
 3. Only then produce final answer
+
 """
+download_pdfs_from_page("https://arxiv.org/pdf/2510.25445.pdf")
+that function expects an HTML page
+NOT a direct PDF URL
+You need to separate responsibilities:
+web_search(query) -> search_result
+extract_pdf_links(search_result) -> pdf_urls
+download_pdf(url)
+LLM ↔ tools ↔ LLM ↔ tools … until goal is satisfied
+1. web_search (ONCE)
+        ↓
+2. extract PDF links
+        ↓
+3. download ALL PDFs (ONCE)
+        ↓
+4. LOOP over local files:
+       - load PDF
+       - process / summarize / extract
+       - refine insights
+        ↓
+5. final report
+6. Manual pipeline for critical steps
+Tool-calling for exploration steps
+LLM → extract_pdf_links → download_pdfs
+LLM decides everything
+↓
+web_search (Tavily)
+↓
+LLM reads results
+↓
+LLM directly calls download_pdfs(urls)
